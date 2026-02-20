@@ -811,7 +811,6 @@ img {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-  }
     z-index: 1;
       height: calc(100vh - 100px); /* full screen minus navbar height */
     font-size: 1.5rem;
