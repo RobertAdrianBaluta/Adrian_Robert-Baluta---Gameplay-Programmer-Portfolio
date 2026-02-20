@@ -381,8 +381,7 @@ body {
   height: auto;
    display: grid;
   grid-template-columns: 1fr;
-  
-  padding: 60px;
+
 }
 /* Lists */
 .Aleft {
@@ -623,14 +622,12 @@ body {
 .geometric h2 {
   padding-top: 20px;
   font-size: 25px;
-  padding-left: 70px;
   font-family: 'Courier New', monospace;
   color: rgba(0, 0, 0, 0.685);
 }
 
 
 .SectionText-BOX {
-   padding-left: 120px;
    margin-left: 50px;
    margin-right: 50px;
   background-color: rgba(0, 0, 0, 0.226);
@@ -644,7 +641,6 @@ body {
 
 .SectionText-BOX h1 {
   font-size: 50px;
-  padding-left: 70px;
   font-family: 'Courier New', monospace;
   color: #6fbb91;
 }
@@ -655,7 +651,6 @@ body {
 
 .SectionText-BOX p {
   font-size: 20px;
-  padding: 10px 20px 20px 70px;
   font-family: 'Courier New', monospace;
   color: rgb(204, 195, 195);
 }
@@ -692,34 +687,6 @@ img {
   height: auto;
   display: block;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
