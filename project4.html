@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Practice begins here</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Navbar section -->  
+    <nav class="navbar">
+      <div class="navbar__container">
+        <a href="index.html"id="navbar__logo">Adrian_Robert Baluta - Gameplay Programmer</a>
+        <div class="navbar__toggle" id="mobile-menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>  
+        <ul class="navbar__menu">
+          <li class="navbar__item"><a href="index.html" class="navbar__links">Home</a></li>
+          <li class="navbar__item"><a href="https://github.com/RobertAdrianBaluta"target="_blank" class="navbar__links">GitHub</a></li>
+          <li class="navbar__item"><a href="https://www.linkedin.com/in/robert-băluta-9430ba262/" target="_blank" class="navbar__links">LinkedIn</a></li>
+       <!--<li class="navbar__btn"><a href="" class="button">My CV</a></li>-->   
+        </ul>
+      </div>
+    </nav>
+    
+  <!-- HEADER -->
+  <div class="TitleText">
+    <h1>Entity component system - space shooter</h1>
+  </div>
+
+  <!-- PROJECT SUMMARY -->
+  <div class="container">
+        <div class="left">
+              <h2>Entity Component System (ECS) </h2>
+              <p>Time worked on: 2 weeks</p>
+              <p>People worked on: 1</p>
+              <p>Language: C#</p>
+        </div>
+        <div class="right">
+          <p>
+            An optimized space shooter using Entity Component Systems, an almost forgotten technique to achieve a large amount of entities while keeping optimization performant. </p>
+        </div>
+   </div>
+
+  <section class="SectionText-BOX">
+    <h1>Introduction</h1>
+    <p>ECS stands for Entity Component System, and it's a data-oriented design pattern used in game development, especially popular in frameworks like Unity DOTS (Data-Oriented Technology Stack). An almost forgotten technique, this is used to create a large amount of game entities while keeping performance high.</p>
+    <p>E - Entities- These are unique identifiers that serve as placeholders or containers for components.</p>
+    <p>C - Components- These are data structures that contain specific attributes or properties that are placed inside entities.</p>
+    <p>S - Systems - These contain the logic that operates on entities possessing specific components.</p>
+  </section>
+
+  <section class="SectionText-BOX">
+    <h1>Why did I choose ECS?</h1>
+    <p>I chose to work with ECS because I wanted to take on something I never worked with before. It has a steeper learning curve, a developer accustomed to object-oriented programming (OOP) such as me found that ECS concepts challenging to grasp initially. Understanding how to decompose entities into components and systems requires a shift in thinking from traditional OOP paradigms. A new complication to take on where I could challenge myself and flip the script on everything I have learned so far. I would push myself into an uncomfortable position in order to grow as a programmer. </p>
+  </section>
+
+    <section class="SectionText-BOX">
+    <h1>Working with ECS- obstacles and difficulties</h1>
+    <p>My plan was simple, create one entity, multiple it by 1000 and spread them around my canvas, give them visuals and physics and in the end- create a ship to shoot them all down. So I started by downloading the packages. Unlike game objects, an entity is empty, nothing. So I have to create create a script where I would store all the components I needed, a position component and a speed component so I can move them around, then I used gizmos to visualize them for now. Using a "forloop" and an "entitiescount" I instantiate 100 entities. And now, it's time to make them seen...​ My first and biggest issue, which plagued me throughout the entire project, was the mismatch between the release numbers of Unity and the ECS packages required for Unity DOTS to work, causing incompatibilities between them.</p>
+          <p>SharedComponentData, SharedData, RenderMesh, SharedRenderMesh, Managed, Unmanaged... I could not get the mesh rendering to work and visualize my entities. I tried baking, referencing, super old versions but nothing would work and i would step way out of my circle of knowledge, syntaxes and structures I have never heard of before.</p>
+
+        </div>
+    
+
+
+
+<p>So, I decided to approach it differently. My solution? TMPro. My enemies will simply be
+
+"0"s and "1"s. This workaround saved me hours of frustration and avoided the rabbit hole
+
+of chasing down compatible packages or waiting for updates. Sure, it comes with a slight
+
+performance hit, since TMPro relies on GameObjects,
+
+but going hybrid felt like the sanest choice.</p>
+<p>I created a collider, placed the TMPro inside, turned it into a prefab, and referenced it as a
+
+component on my entity. This way, the text is bound directly to the entity's position via the
+
+prefab itself. Instantiating the text as a separate prefab from the spawner would have required
+
+constantly syncing its position with the entity and collider—adding unnecessary overhead.
+
+Although I was satisfied at the time with how my enemies looked, I quickly changed my mind, for a more simple and visual pleasing appearance. Just simple square sprites with randomized colors.
+</p>
+<p>With this setup, I was able to move forward and even built a simple ship that spawns bullets.</p>
+</section>
+    <script src="app.js"></script>      </html>

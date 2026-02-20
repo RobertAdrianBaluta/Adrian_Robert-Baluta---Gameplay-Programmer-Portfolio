@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Practice begins here</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Navbar section -->  
+    <nav class="navbar">
+      <div class="navbar__container">
+        <a href="index.html"id="navbar__logo">Adrian_Robert Baluta - Gameplay Programmer</a>
+        <div class="navbar__toggle" id="mobile-menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>  
+        <ul class="navbar__menu">
+          <li class="navbar__item"><a href="index.html" class="navbar__links">Home</a></li>
+          <li class="navbar__item"><a href="https://github.com/RobertAdrianBaluta" target="_blank" class="navbar__links">GitHub</a></li>
+          <li class="navbar__item"><a href="https://www.linkedin.com/in/robert-băluta-9430ba262/" target="_blank" class="navbar__links">LinkedIn</a></li>
+       <!--<li class="navbar__btn"><a href="" class="button">My CV</a></li>-->   
+        </ul>
+      </div>
+    </nav>
+
+  <!-- HEADER -->
+  <div class="TitleText">
+    <h1>Data Structure and Algorithms</h1>
+  </div>
+
+  <!-- PROJECT SUMMARY -->
+  <div class="container">
+    <div class="left">
+      <h2>Data Structure and Algorithms</h2>
+      <p>Time worked on: 2 weeks</p>
+      <p>People worked on: 1</p>
+      <p>Language: C#</p>
+    </div>
+
+    <div class="right">
+     <p>   
+      This project was made for an assignment at FutureGames.
+      It explores the efficiency of various sorting and graph traversal
+      algorithms in C#. It showcases not only how I work, but how I think.
+      </p>
+    </div>
+
+    <div class="rightofright">
+       <img src="Images/maze.png" alt="C# Logo" class="Maze" />
+
+    </div>
+
+  </div>
+
+  <!-- INTRODUCTION -->
+  <div class="Dataintroduction">
+    <section class="SectionText-BOX">
+      <h1>Introduction</h1>
+
+      <p>
+        This data structures and algorithms project was an engaging and challenging experience,
+        where I implemented and analyzed different sorting and traversal algorithms in C#.
+      </p>
+
+      <p>
+        Arrays of different sizes populated with random values undergo multiple sorting algorithms.
+        A node graph is implemented from a file and traversed.
+      </p>
+
+      <p>
+        Working solo was educational, but I prefer team environments for collaboration and dynamics.
+      </p>
+    </section>
+
+    <!-- ALGORITHMS + CODE -->
+      <!-- LEFT: LIST -->
+      <div class="SectionText-BOX">
+        <div class="List">
+          <h1>Implemented Algorithms</h1>
+
+          <h2>Simple Sorting Algorithms</h2>
+          <ul>
+            <li>Insertion Sort</li>
+            <li>Bubble Sort</li>
+            <li>Selection Sort</li>
+          </ul>
+
+          <h3>Advanced Sorting Algorithms</h3>
+          <ul>
+            <li>Merge Sort</li>
+            <li>Quick Sort</li>
+          </ul>
+
+          <h3>Traversal Algorithms</h3>
+          <ul>
+            <li>Depth-First Traversal (DFT)</li>
+            <li>Breadth-First Traversal (BFT)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- RIGHT: CODE BLOCKS -->
+    
+        <!-- CODE BLOCK 1 -->
+        <div class="CSharpCode">
+          <div class="code-header">
+            <span>Code – Sorting Algorithms</span>
+            <button class="toggle-btn" onclick="toggleCode(this)">−</button>
+          </div>
+
+          <pre class="code-block language-csharp"><code class="language-csharp">
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DataStructureGradedAssignment
+{
+    internal class Algos
+    { 
+        public void MergeSort(int[] array)
+        {
+            if (array.Length <= 1)
+            {
+             //   Console.WriteLine($"Base case reached: Array {string.Join(", ", array)} is already sorted.");
+                return;
+            }
+
+            int mid = array.Length / 2;
+            int[] left = new int[mid];
+            int[] right = new int[array.Length - mid];
+
+            for (int i = 0; i < mid; i++)
+            {
+                left[i] = array[i];
+            }
+
+            //  Console.WriteLine($"Splitting array: {string.Join(", ", array)}");
+            for (int i = mid; i < array.Length; i++)
+            {
+                right[i - mid] = array[i];
+            }
+
+          //  Console.WriteLine($"Left subarray: {string.Join(", ", left)}");
+           //   Console.WriteLine($"Right subarray: {string.Join(", ", right)}");
+            MergeSort(left);
+            MergeSort(right);
+          //    Console.WriteLine($"Merging arrays: Left: {string.Join(", ", left)} | Right: {string.Join(", ", right)}");
+            Merge(array, left, right);
+           //  Console.WriteLine($"Merged array: {string.Join(", ", array)}");
+        }
+        private void Merge(int[] array, int[] left, int[] right)
+        {
+            int k = 0, j = 0, i = 0; // these ints help traverse k = arary, j = right, k = left
+
+            while (i < left.Length && j < right.Length) //  until the arrays reach an end
+            {
+                if (left[i] <= right[j]) //  if left smaller than right, i goes in the mergeged array first // else j goes first -- thus it is sorted
+                {
+                    array[k++] = left[i++];
+                }
+                else
+                {
+                    array[k++] = right[j++];
+                }
+            }
+
+            while (i < left.Length)    //Both while loops are used at the end of the sorting arangements, they put back the values into the main array
+            {
+                array[k++] = left[i++];
+            }
+
+            while (j < right.Length)
+            {
+                array[k++] = right[j++];
+            }
+            // Console.WriteLine($"After merging: {string.Join(", ", array)}");
+        }  
+        public void QuickSort(int[] array)             
+        {
+            QuickSortRecursive(array, 0, array.Length - 1);       //The function now can determine the length of the array internally. 0 = low, array.Length - 1 = high
+        }
+        public void QuickSortRecursive(int[] array, int low, int high)  
+        static int Partition(int[] array, int low, int high)
+        {
+            int pivot = array[high];                  //Pivot is the farthest to right number in the array
+            int i = low - 1;                  // Intex where all the numbers lesser than the pivot should go
+
+            for (int j = low; j < high; j++)           // Going trough the array until the low(j) reatches the pibot(high)
+            {                       
+                if (array[j] <= pivot)           // if j is equal or smallare than the pivot, "i" will go to next index and then swap with j 
+                {
+                    i++;
+                    int tempVal1 = array[i];
+                    array[i] = array[j];
+                    array[j] = tempVal1;
+                }
+            }
+            int tempVal2 = array[i + 1];    // Swap array[i + 1] and array[high] to place the pivot in its correct position (last inxdex in the current array)
+            array[i + 1] = array[high];
+            array[high] = tempVal2;
+
+            return i + 1;    // Returns the index where the pivot is now located, which will be used in the recursive calls to QuickSort to sort the two sub-arrays.
+        }
+        public void SelectionSort(int[] array)
+        {
+            int tempVar = 0;
+            for (int x = 0; x < array.Length; x++)  // Goes trough every index in the array
+            {
+                int lowestValueIndex = x; // The minimum value of the unsorted array
+
+                for (int y = x + 1; y < array.Length; y++)          //Starts at index x + 1 until the end of the array 
+                {
+                    if (array[y] < array[lowestValueIndex])      // If the current element is smaller than the element at the lowestValueIndex, update lowestValueIndex
+                    {
+                        lowestValueIndex = y;
+                    }
+                }
+                // If the index of the minimum value is different from the current index, swap the values
+                if (array[x] != array[lowestValueIndex])
+                {
+                 //   Console.WriteLine("Switching indexes " + array[x] + " and " + array[lowestValueIndex] + " because " + array[lowestValueIndex] + " is the lowest value in the unsorted part of the array.");
+                    tempVar = array[x];
+                    array[x] = array[lowestValueIndex];
+                    array[lowestValueIndex] = tempVar;
+                }
+            }
+        }
+        public void BubbleSort(int[] array)
+        {
+            int temporaryVar = 0;
+            // Console.WriteLine("Bubble Sorting Started :");
+            for (int x = 0; x < array.Length - 1; x++)
+            {
+                for (int y = 0; y < array.Length - 1 - x; y++)
+                {
+                    //    Console.WriteLine("Comparing " + array[y] + " to " + array[y + 1]);
+                    if (array[y] < array[y + 1])
+                        //  Console.WriteLine("Cant switch " + array[y] + " with " + array[y + 1] + " because " + array[y] + " is smaller than " + array[y + 1]);
+                        if (array[y] > array[y + 1])
+                        {
+                            //   Console.WriteLine("Switching indexes " + array[y] + " and " + array[y + 1]);
+                            temporaryVar = array[y + 1];
+                            array[y + 1] = array[y];
+                            array[y] = temporaryVar;
+                        }
+                }
+            }
+        }
+        public void InsertionSort(int[] array)
+        {
+            int tempVar = 0;
+            for (int x = 0; x < array.Length; x++) // each index in the array
+            {
+                int y = x; 
+                while (y > 0 && array[y] < array[y - 1]) // 2 indexes at a time, they will swap accordingly
+                {
+                    tempVar = array[y];
+                    array[y] = array[y - 1];
+                    array[y - 1] = tempVar;
+                    y--;
+                }
+            }
+        }
+
+    }
+}
+
+          </code></pre>
+        
+
+        <!-- CODE BLOCK 2 -->
+        <div class="CSharpCode">
+          <div class="code-header">
+            <span>Code – Graph Traversal</span>
+           <button class="toggle-btn" onclick="toggleCode(this)">−</button>
+          </div>
+
+          <pre class="code-block"><code class="language-csharp">
+using DataStructureGradedAssignment;
+using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
+
+public class Program
+{
+    static void Main()
+    {
+        //Opens the File, reads from it
+        string filePath = "C:\\Users\\adrian-robert.baluta\\Desktop\\GraphNodes.txt";
+        string[] lines = File.ReadAllLines(filePath);
+
+
+        //Write down the file
+        int totalRows = lines.Length;
+        int totalCols = lines[0].Length;
+        GraphXO graph = new GraphXO(totalRows, totalCols);
+
+        foreach (string linetowrite in lines)
+        {
+            Console.WriteLine(linetowrite);
+        }
+
+        for (int row = 0; row < lines.Length; row++)
+        {
+            string line = lines[row];
+            for (int col = 0; col < line.Length; col++)
+            {
+                // make node and insert into graph
+                Node node = new Node(row, col);
+                graph.nodesGrid[row, col] = node;
+
+                // adjust node property based on character
+                char character = line[col];
+                if (character == 'X')
+                {
+                    node.isWall = true;
+                }
+
+                if (character == 'S')
+                {
+                    graph.startNode = node;
+                }
+
+                if (character == 'G')
+                {
+                    graph.goalNode = node;
+                }
+            }
+        }
+
+        //Writed down the nodes
+        for (int row = 0; row < lines.Length; row++)
+        {
+            string line = lines[row];
+            for (int col = 0; col < line.Length; col++)
+            {
+                Node node = graph.nodesGrid[row, col];
+            }
+        }
+        Console.WriteLine($"start node: ({graph.startNode.row}, {graph.startNode.col})");
+        Console.WriteLine($"goal node: ({graph.goalNode.row}, {graph.goalNode.col})");
+
+
+
+        //Time for the mesurements
+        Stopwatch GraphstopWatch = new Stopwatch();
+        for (int v = 0; v < 2; v++)
+        {
+          //  graph.DFT(graph.startNode, graph.goalNode);
+            graph.BFT(graph.startNode, graph.goalNode);
+        }
+      
+            GraphstopWatch.Restart();
+           // graph.DFT(graph.startNode, graph.goalNode);
+           graph.BFT(graph.startNode, graph.goalNode);
+            GraphstopWatch.Stop();
+
+            TimeSpan graphts = GraphstopWatch.Elapsed;
+            Console.WriteLine($"Time taken to Traverse: {graphts.TotalMilliseconds} milliseconds");
+       
+
+        Console.ReadLine();
+
+        #region Sorting
+        Algos algos = new Algos();
+        Random rand = new Random();
+        Stopwatch SortstopWatch = new Stopwatch();
+
+        int arrayLength = 5000;
+        int[] array = new int[arrayLength];       //Array that will be randomized and sorted
+
+        int timeArrayLength = 5;
+        double[] timeArray = new double[timeArrayLength];       //Array to store the time taken to sort
+
+        for (int warmUp = 0; warmUp < 1; warmUp++)           //Warm up forloop to compensate for the initial compiler time 
+        {
+            for (int i = 0; i < arrayLength; i++)
+                array[i] = rand.Next(1, 100);
+
+           // algos.QuickSort(array);            //}
+           // algos.MergeSort(array);               // }
+            //algos.SelectionSort(array);          // } The sorting arrays
+           // algos.BubbleSort(array);            // }
+            algos.InsertionSort(array);        //}
+        }
+
+        for (int x = 0; x < timeArrayLength; x++)       // Performs the sorting algorithm 5 times in order to make work easier
+        {
+            for (int i = 0; i < arrayLength; i++)       // Randomizes the arrays values
+            {
+                array[i] = rand.Next(1, 100);
+            }
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nOriginal State: " + "[{0}]", string.Join(", ", array));
+            Console.ForegroundColor = ConsoleColor.White;
+
+
+            SortstopWatch.Restart();
+            // algos.QuickSort(array);
+           // algos.MergeSort(array);
+             //algos.SelectionSort(array);
+           //  algos.BubbleSort(array);
+              algos.InsertionSort(array);
+
+            SortstopWatch.Stop();
+
+            TimeSpan ts = SortstopWatch.Elapsed;           //Used to display the time variable later on
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Sorted State: " + "[{0}]", string.Join(", ", array));
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"Time taken to sort: {ts.TotalMilliseconds} milliseconds");
+            timeArray[x] = ts.TotalMilliseconds;        //Stores the Time into an array
+
+        }
+
+        double sum = 0;                       //Used to help with the calculations
+        foreach (double x in timeArray)       // }
+        {                                     //   }
+            sum += x;                         //    } Adds up the time taken for each itteration and divides it with the ammoun of iterations to get the median
+        }                                     //   }
+        sum = sum / timeArrayLength;          // }
+
+        Console.Write("\nThe median of all the times taken to calculate the algorithm's measurements: ");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write(sum + " milliseconds");
+        Console.ReadLine();
+    }
+}
+
+#endregion
+
+#region Graph
+public class Node
+{
+    public int row;
+    public int col;
+
+    public bool isWall;
+    public bool isVisited;
+    public Node(int y, int x)
+    {
+        row = y; col = x;
+        isWall = false;
+    }
+}
+
+public class GraphXO
+{
+    public Node[,] nodesGrid;
+    int totalRows;
+    int totalCols;
+    public Node startNode;
+    public Node goalNode;
+    public GraphXO(int _rows, int _cols)
+    {
+        totalRows = _rows; totalCols = _cols;
+        nodesGrid = new Node[totalRows, totalCols];
+        startNode = null;
+        goalNode = null;
+
+    }
+
+    public List<Node> GetNeighbors(Node node) //List<node> function returns a list of nodes it is used to 
+    {
+        int row = node.row; int col = node.col;
+        List<Node> neighbors = new List<Node>();
+
+        // check up
+        if (row > 0 && !nodesGrid[row - 1, col].isWall) { neighbors.Add(nodesGrid[row - 1, col]); }
+
+        // check down
+        if (row < totalRows - 1 && !nodesGrid[row + 1, col].isWall) { neighbors.Add(nodesGrid[row + 1, col]); }
+
+        // check left
+        if (col > 0 && !nodesGrid[row, col - 1].isWall) { neighbors.Add(nodesGrid[row, col - 1]); }
+
+        // check right
+        if (col < totalCols - 1 && !nodesGrid[row, col + 1].isWall) { neighbors.Add(nodesGrid[row, col + 1]); }
+
+        return neighbors;
+    }
+
+    public void DFT(Node startNode, Node goalNode)
+    {
+        if (startNode.isVisited)         // Check if the node has already been visited
+        {
+            return;
+        }
+
+        startNode.isVisited = true;       // Mark the current node as visitedv
+
+        Console.WriteLine($"Visiting ({startNode.row}, {startNode.col}) ");
+
+        List<Node> neighbors = GetNeighbors(startNode);
+
+        foreach (var neighborsofNode in neighbors) // var neighbor is a stand in variable for neigbhours of the current Node
+        {
+            if (!goalNode.isVisited)
+            {
+                DFT(neighborsofNode, goalNode); //Recursion, but this time for the neighbor of the node
+            }
+            if (startNode == goalNode)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Traverse Complete");
+                Console.ForegroundColor = ConsoleColor.White;
+                return;
+            }
+        }
+    }
+    public void BFT(Node startNode, Node goalNode)
+    {
+        Queue<Node> queue = new Queue<Node>();              // make a queue, insert start node
+        queue.Enqueue(startNode);
+
+        while (queue.Count > 0)                //while the queue is not empty, pop out the front and insert the unvisited neighbors of this front node into the queue
+        {
+            Node frontNode = queue.Dequeue();
+           Console.WriteLine($"Visiting ({frontNode.row}, {frontNode.col}) ");
+            if (frontNode == goalNode)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Traverse Complete");
+                Console.ForegroundColor = ConsoleColor.White;
+                return;   //return when we reach goal node.
+            }
+            List<Node> neighbors = GetNeighbors(frontNode);
+            foreach (var neighborsofNode in neighbors)
+            {
+                if (!neighborsofNode.isVisited)
+                {
+                    Console.WriteLine($"Neighbor of front node ({frontNode.row}, {frontNode.col}) : ({neighborsofNode.row}, {neighborsofNode.col}) ");
+                    queue.Enqueue(neighborsofNode);
+                    neighborsofNode.isVisited = true;
+                }
+            }
+        }
+    }
+    #endregion
+
+}
+
+
+          </code></pre>
+        </div>       
+      </div>
+    </div>
+  </div>
+
+  <!-- Sorting algorithms -->
+    <section class="Process">
+  <div class="SectionText-BOX">
+    <h1>Sorting Algorithms</h1>
+    <ul>
+      <li>1. Create array</li>
+      <li>2. Put it inside a for loop that will help measure the time in multiple iterations</li>
+      <li>3. Randomize set array each loop</li>
+      <li>4. Start timer -> choose a sorting algorithm -> Stop timer -> Save the time -> repeat x times </li>
+      <li>5. Calculate the median of all the times using this calculation6. Write down the results</li>
+    </ul>
+  </div>
+
+  <div class="SectionText-BOX">
+    <h1>Organizing</h1>
+    <p>
+      The sorting algorithms where the most challenging part to work with, but at they were also the most fun part too. Instead of manually implementing sorting logic every time I need to sort an array- I stored and wrote them down as functions inside a different script, so whenever I want to sort an array, I can just reference them, and the algorithm within does the rest. This structure helped me greatly in the testing process
+    </p>
+  </div>
+
+  <div class="SectionText-BOX">
+    <h1>Linearithmic time complexity O(nlogn)</h1>
+    <p>
+      I have noticed that Selection Sort exhibits a consistent increase in execution time as the array size grows. The quadratic time complexity is evident, making it less practical for larger datasets.
+​
+Similar to Selection Sort, Bubble Sort demonstrates a quadratic time complexity. The execution time increases significantly with larger arrays.
+
+Insertion Sort's execution times increase noticeably with larger datasets, emphasizing its quadratic time complexity.
+    </p>
+  </div>
+
+  <div class="SectionText-BOX">
+    <h1>Quadratic time complexity O(n²)</h1>
+    <p>
+      Merge Sort consistently outperforms Selection and Bubble Sort, demonstrating a nearly linear increase (linearities time complexity) in execution time. It remains relatively stable even for larger datasets.
+ 
+QuickSort exhibits a favourable performance, with execution times increasing gradually with the array size. It outperforms Selection and Bubble Sort and competes closely with Merge Sort.
+    </p>
+  </div>
+
+  <div class="SectionText-BOX">
+    <h1>
+What have I learned?</h1>
+    <p>
+      This project gave me a hands-on understanding of how different sorting algorithms perform in real scenarios. Seeing execution times plotted for various input sizes made the differences between quadratic (O(n²)) and linearithmic (O(n log n)) complexities much clearer.
+This experience reinforced the importance of accurate performance testing and questioning assumptions.
+Throughout this project, I learned not just about organizing arrays, but also about structuring code. Using classes, functions, namespaces and regions helped me better understand modularity, maintainability, scalability and cohesion. Even though I worked on this project alone, I treaded it like I would in a workplace, so I am sure that anyone who looks at my code, will be able to find their way around easily.
+    </p>
+</div>
+</section>
+
+<section class="Maze">
+  <div class="SectionText-BOX">
+    <h1>Navigating a NodeGraph </h1>
+
+<p>Building and Traversing a Virtual Maze</p>
+
+    <p>After working with sorting algorithms, I wanted to shift my focus to graph structures—specifically, how to represent and traverse them efficiently.
+This part of the project involved implementing a node-based graph from a text file and exploring two different traversal methods: Depth-First Search (DFS) and Breadth-First Search (BFS).The goal was to take a grid-based text file and turn it into a traversable graph, where certain characters represented nodes, walls, a starting point, and a goal. From there, I compared how DFS and BFS handled traversal and measured their efficiency.</p>
+  </div>
+  <div class ="SectionText-BOX">
+    <h1>Course of action</h1>
+    <p>
+      To start, I created two distinct classes: one for the Node and one for the Graph. Each class has its own variables and properties. The Graph is represented as a 2D array, which helps in reading the file as a grid and mapping letters to specific coordinates, making each letter a node in the graph. Towards the end of my code, I implemented a list function that retrieves the neighbors of each node in the array. This function plays a crucial role in the graph traversal process. I then processed the grid, extracting the coordinates for each character and assigning them to the graph, enabling me to later traverse the graph efficiently. The only
+
+step remaining was to traverse it.
+    </p>
+  </div>
+  <div class ="SectionText-BOX">
+    <h1>BFT&DFT - O = node   X = wall   S = start    G = goal</h1>
+    <p>
+      he results of Depth First and Breadth-First Traversal showed minimal differences in execution time, making their comparison less insightful than expected. While both methods have their strengths, they follow predictable patterns that didn't offer much contrast in performance.
+
+ 
+
+In hindsight, I believe that incorporating an algorithm like A* would have provided a more dynamic comparison, as it considers path cost and could have highlighted a different approach to traversal efficiency.</p>
+  </div>
+
+  <div class ="SectionText-BOX">
+    <h1>Conclusion</h1>
+    <p>
+      Working with graph traversal reinforced the importance of structuring data efficiently. Implementing the graph from a text file gave me hands-on experience in transforming raw data into a usable structure.
+Exploring a more diverse set of algorithms could have led to deeper insights into performance trade-offs in various graph structures. Looking back at projects I always tell myself that I could do better and that is why I continue to push myself to achieve better outcomes and learn from my mistakes.
+This was great learning experience, not only from a technical knowledge perspective, but also a workflow perspective. Writing readable and maintainable code is on the same level of importance as writing functional code.​ </p>
+</section>
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-csharp.min.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Practice begins here</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Navbar section -->  
+    <nav class="navbar">
+      <div class="navbar__container">
+        <a href="index.html"id="navbar__logo">Adrian_Robert Baluta - Gameplay Programmer</a>
+        <div class="navbar__toggle" id="mobile-menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>  
+        <ul class="navbar__menu">
+          <li class="navbar__item"><a href="index.html" class="navbar__links">Home</a></li>
+          <li class="navbar__item"><a href="https://github.com/RobertAdrianBaluta" target="_blank" class="navbar__links">GitHub</a></li>
+          <li class="navbar__item"><a href="https://www.linkedin.com/in/robert-băluta-9430ba262/" target="_blank" class="navbar__links">LinkedIn</a></li>
+       <!--<li class="navbar__btn"><a href="" class="button">My CV</a></li>-->   
+        </ul>
+      </div>
+    </nav>
+    
+  <!-- HEADER -->
+  <div class="TitleText">
+    <h1>Goozilla</h1>
+  </div>
+
+  <!-- PROJECT SUMMARY -->
+  <div class="container">
+        <div class="left">
+              <h2>Goozilla </h2>
+              <p>Time worked on: 4 weeks</p>
+              <p>People worked on: 8</p>
+              <p>Language: C#</p>
+        </div>
+        <div class="right">
+          <p>
+            This is the second game project I worked on as a game programmer using Unreal Engine. In this game, you play as a slime ball that devours everything in its path, growing larger and wreaking havoc across a city. I was responsible for implementing a slimy movement for the player and designing the dynamic camera system to complement the gameplay and growing size of the slime ball. But in this part I will only talk about the movement.
+           <a href="https://futuregames.itch.io/goozilla" target="_blank">itch.io</a>
+          </p>
+           
+        
+        
+          </div>
+    </div>
+
+  <section class="SectionText-BOX">
+    <h1>Introduction</h1>
+    <p>  To begin with, I encountered significant technical issues with Visual Studio’s integration with Unreal Engine. I went through extensive trial and error, initially believing the problem stemmed from flaws or incompatibilities in my code. However, despite regenerating the project multiple times, Visual Studio consistently failed to recognize my code. As a result, I switched to Rider for the first time. To minimize engine-related errors, I also decided to adapt my workflow—combining traditional coding with direct work inside Unreal Engine using Blueprints.</p>  
+  </section>
+
+  <section class="SectionText-BOX">
+    <h1>Plan and execution</h1>
+    <p>My plan was straightforward: use Unreal's Enhanced Input system through Input Maps and separate the responsibilities between Blueprints and code. Blueprints would handle the input system itself, while the underlying logic for each input would be implemented in C++.Since the main character was a slime, my goal was to start with basic movement and then iterate to make it feel more organic and, well… slimy. </p>
+   
+  
+      <p>I enabled Enhanced Input and set up input mappings because this system offers more versatility for the designers compared to Unreal's default input system. Although I had previously implemented similar setups purely in C++, I opted for a hybrid approach this time—leveraging both C++ and Blueprints to create a more flexible workflow.</p>
+      <p>In order to make the most out of this system I need to create an Input map which refers to the process of defining how player inputs (e.g., keyboard keys, mouse clicks, gamepad buttons, etc.) are mapped to specific actions or axes within the game. This system offers a more flexible and powerful way of handling input compared to the older input system, enabling better customization, modularity, and the ability to handle complex input scenarios.</p>
+      <p>Inside the Input map, I add 2 value Input actions of type Axis1D(float) that I have created before, one that will control the
+
+Y-axis(Forward "W"/ Backwards "S")
+
+movement and one for the
+
+X-axis(Left "A"/Right "D") movement, setting modifiers to negative to differentiate the directions W-S as well as A-D.</p>
+   
+  
+  </section>
+
+    <section class="SectionText-BOX">
+    <h1>Logic</h1>
+    <p>For this game project, the player movement was pretty important, so I made 2 different logics for it, first one using simply AddMove in order to have something to work with for the first early builds, and the second one being AddForce, where the designer has more control over how the player moves. I chose Addforce for the main movement because with how many ability the player had, we wanted to keep the logic simple, and because the slime could now have physics, it opened the door to even more synergies, such as bouncing after jumping. </p>
+    <p>After I have completed the setup for the input system, it's time to create the logic that will be used when these triggers are called. I will go over both logics at the same time because they use the same system and for the sake of simplicity. I start off by creating values for Speed(add move), ForceMagnitude(Force) and directions, as well as 2 bools in order for the designer to go back to the original movement if needed.</p>
+    <p>Based on the players input, a function will be called, and I have 2 of them, for going forward and backwards as well as right and left. First checking for an input value and then depending on if we are using AddMove or AddForce, I simply take the actors direction vector and multiply it with the speed and put the result value into the move/force function .It is also important to keep in mind that if the player is using force, it needs physics. So I add a couple of settings for the actor, these things could also be done in unreal, but since I am using a bool for this, they don’t turn on when I start the game.</p>
+    </section>
+
+    <section class="SectionText-BOX">
+      <h1>Results</h1>
+          <div class="scriptsidebyside">
+               <div class="scriptleft">
+               <img src="images/slimegif1.gif" alt="slimegif1" class="slimegif1">  
+              </div>
+               <div class="scriptright">
+                <p>At that time I was prototyping using a helicopter mesh. But you can see how it sliding around the ground, starting slowly, acceleration and slowing down when reaching the destination. Perfect for how a slime would move in our game.</p>
+               </div>
+          </div>
+          <div class="scriptsidebyside">
+               <div class="scriptleft">
+                 <p>The added physics really opened the door for a lot of fun ideas. In our game we had powerups, one of them was called "slam", each time you would land from a jump you would slam the ground, making all objects close to the LZ would fly away and take damage. Combine that with the bounciness and the players found it to be on of the most fun things to do in the game. All thanks to my decision of implementing physics to the player actor. I was very proud of that!</p>
+               </div>
+                 <div class="scriptright">
+                 <img src="images/slimegif2.gif" alt="slimegif2" class="slimegif2">  
+                  </div>
+                
+          </div>
+          <p>Later down the road, using enhanced inputs and the system that I have created I was able to optimise it so that you could play the game on controller as well!</p>
+                
+
+
+    </section>
+
+
+
+    <script src="app.js"></script>      </html>
