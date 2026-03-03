@@ -97,7 +97,226 @@ My responsibilities included implementing audio and sound effects, integrating a
     </div>
     
     </div>
+     <!-- RIGHT: CODE BLOCKS -->
+    
+        <!-- CODE BLOCK 1 -->
+        <div class="CSharpCode">
+          <div class="code-header">
+            <span>Code – FeedTheCatManager</span>
+            <button class="toggle-btn" onclick="toggleCode(this)">−</button>
+          </div>
+
+          <pre class="code-block language-csharp"><code class="language-csharp">
+public class FeedTheCatManager : MonoBehaviour
+{
+    #region Inpectors and Variables
+    [Header("Screens")]
+    [SerializeField] GameObject StartOptions;
+    [SerializeField] GameObject GameScreen;
+    [SerializeField] GameObject VictoryScreen;
+
+
+    [Header("Game timer and catsFed")]
+    private int catsFed = 0;
+    private int wrongOrder  = 0;
+    private float timeLimitLeft;
+
+    public int catsFedToWin;
+    public float timeLimit;
+
+    public TMP_Text timerText; 
+    public TMP_Text catsFedText;
+
+    public TMP_Text EndGameText;
+    [SerializeField] public TextMeshProUGUI pointsText;
+    [SerializeField] private FeedTheCatGoldManager feedTheCatGoldManager;
+
+    [System.Serializable]
+    public class FoodSpriteMapping
+    {
+        public Foods food;
+        public Sprite sprite;
+    }
+
+    [Header("Food Sprites")]
+    public List<FoodSpriteMapping> foodSpriteMappings = new List<FoodSpriteMapping>();
+
+    [Header("UI Elements")]
+    [SerializeField] private ThoughtBubble thoughtBubble;
+
+
+    [Header("Cat")]
+    [SerializeField] GameObject catPrefab;
+    [SerializeField] Transform catSpawnPoint;
+    [SerializeField] private ParticleSystem puff;
+
+    private CatCravingSystem currentCat;
+    private List<Foods> currentCravings = new List<Foods>();
+ 
+
+    #endregion
+
+    void GenerateNewCat()
+    {
+        if (catsFed >= catsFedToWin)
+            return;
+
+            GameObject catObj = Instantiate(catPrefab, catSpawnPoint.position, Quaternion.identity);
+            currentCat = catObj.GetComponent<CatCravingSystem>();
+            currentCat.SetupCat();
+
+            //Assign the ThoughtBubble from the spawned cat
+            thoughtBubble = catObj.GetComponentInChildren<ThoughtBubble>();
+            GenerateNewCraving(); 
+    }
+        
+    void GenerateNewCraving()
+    {
+        currentCravings.Clear();
+        int cravingCount = UnityEngine.Random.Range(1, 4);
+        var allFoods = new List<Foods>((Foods[])System.Enum.GetValues(typeof(Foods)));
+
+        for (int i = 0; i < cravingCount && allFoods.Count > 0; i++)
+        {
+            int index = UnityEngine.Random.Range(0, allFoods.Count);
+            currentCravings.Add(allFoods[index]);
+            allFoods.RemoveAt(index);
+        }
+        UpdateCravingIcons();
+    }
+
+    void UpdateCravingIcons()
+    {
+        for (int i = 0; i < thoughtBubble.bubbleIcons.Count; i++)
+        {
+            if (i < currentCravings.Count)
+            {
+                thoughtBubble.bubbleIcons[i].sprite = GetSpriteForFood(currentCravings[i]);
+                thoughtBubble.bubbleIcons[i].enabled = true;
+            }
+            else
+            {
+                thoughtBubble.bubbleIcons[i].enabled = false;
+            }
+        }
+    }
+
+    public Sprite GetSpriteForFood(Foods food)
+    {
+        foreach (var mapping in foodSpriteMappings)
+        {
+            if (mapping.food == food)
+                return mapping.sprite;
+        }
+        return null;
+    }
+
+ 
+    void FeedCat(Foods chosenFood)
+    {
+        if (currentCat.satisfied)
+            return; 
+
+        if (currentCravings.Contains(chosenFood))
+        {
+            for (int i = 0; i < thoughtBubble.bubbleIcons.Count; i++)
+            {
+                if (thoughtBubble.bubbleIcons[i].sprite == GetSpriteForFood(chosenFood))
+                {
+                    var icon = thoughtBubble.bubbleIcons[i];
+          
+                    Color fadedColor = icon.color;
+                    fadedColor.a = 0.5f; // make it semi-transparent
+                    icon.color = fadedColor;
+                    break;
+                }
+            }
+
+            currentCravings.Remove(chosenFood);
+            if (currentCravings.Count == 0)
+            {
+                currentCat.satisfied = true;
+                puff.Play();
+                catsFed++;
+                catsFedText.text = catsFed.ToString();
+                currentCat.MoveToNextCat();
+                WinConditions();
+                Invoke("GenerateNewCat", 0f);
+            }
+        }
+        else wrongOrder++;
+        
+        if (catsFed < 0) catsFed = 0;
+    }
+
+    public void StartGameButton()
+    {
+        GameScreen.SetActive(true);
+        StartGameTimer();
+        StartOptions.SetActive(false);
+        GenerateNewCat();
+    }
+
+    public void StartGameTimer()
+    {
+        timeLimitLeft = timeLimit;
+        catsFedText.text = catsFed.ToString();
+        StartCoroutine(GameTimer());
+    }
+
+    private IEnumerator GameTimer()
+    {
+        while (timeLimitLeft > 0)
+        {
+           timerText.text = Mathf.Ceil(timeLimitLeft).ToString();
+            yield return new WaitForSeconds(1f);
+            timeLimitLeft -= 1f;
+        }
+        WinConditions();
+    }
+
+    void WinConditions()
+    {
+        feedTheCatGoldManager.UpdateValues(wrongOrder, catsFed);
+        int gold = feedTheCatGoldManager.CalculateGoldEarned();
+        pointsText.text = $" {gold}";
+
+        LeanLocalization.SetToken("SCORE", catsFed.ToString());
+        LeanLocalization.SetToken("TIME", timeLimitLeft.ToString());
+
+        if (catsFed >= catsFedToWin)
+        {
+            EndGameText.text = LeanLocalization.GetTranslationText("MiniGame/FeedTheCat/Results", "Localization Error");
+            VictoryScreen.SetActive(true);
+            SaveSystem.SavePlayerGold(gold);
+            DestroyCat();
+        }
+        if (timeLimitLeft <= 0f)
+        {
+            EndGameText.text = LeanLocalization.GetTranslationText("MiniGame/FeedTheCat/ResultsTimeUp", "Localization Error");
+            VictoryScreen.SetActive(true);
+            SaveSystem.SavePlayerGold(gold);
+            DestroyCat();
+        }
+    }
+
+
+    private void DestroyCat()
+    {
+        if (currentCat != null)
+            Destroy(currentCat.gameObject);
+    }
+
+    public void FeedChicken() => FeedCat(Foods.Chicken);
+    public void FeedCheese() => FeedCat(Foods.Cheese);
+    public void FeedMeat() => FeedCat(Foods.Meat);
+    public void FeedMilk() => FeedCat(Foods.Milk);
+    public void FeedTuna() => FeedCat(Foods.Tuna);
+}
+   </code></pre>
   </section>
+
+
     <section class="SectionText-BOX">
     <h1>Long Ship</h1>
         <div class  ="scriptsidebyside">
@@ -108,7 +327,212 @@ My responsibilities included implementing audio and sound effects, integrating a
         <img src="Images/LongShip.gif" class="longship" alt="longship">
       </div>
       </div>
+        <div class="CSharpCode">
+          <div class="code-header">
+            <span>Code – LongShipManager</span>
+           <button class="toggle-btn" onclick="toggleCode(this)">−</button>
+          </div>
+
+          <pre class="code-block"><code class="language-csharp">
+            public class LongShipManager : MonoBehaviour
+{
+    #region variables
+    [Header("Screens")]
+    [SerializeField] GameObject StartOptions;
+    [SerializeField] GameObject GameScreen;
+    [SerializeField] GameObject GameComponents;
+    [SerializeField] GameObject VictoryScreen;
+    [SerializeField] TMP_Text VictoryText;
+    [SerializeField] TMP_Text VictoryGoldText;
+
+
+    [Header("Scripts")]
+    [SerializeField] LongshipHp longShipHp;
+    [SerializeField] FinishLine finishLine;
+    [SerializeField] GameObject finishLinePos;
+    [SerializeField] LongshipGoldManager goldManager;
+
+    [Header("Game Elements")]
+    [SerializeField] GameObject[] ObstaclesPrefabs;
+    [SerializeField] GameObject TallTailPrefab;
+    [SerializeField] GameObject ShortTailPrefab;
+    [SerializeField] GameObject WeirdTailPrefab;
+    [SerializeField] GameObject ObstaclesSpawnLoc;
+    [SerializeField] GameObject LongShipPrefab;
+    [SerializeField] GameObject LongShipSpawnLoc;
+    [SerializeField] GameObject FinishLinePrefab;
+
+    [Header("UI")]
+    [SerializeField] TMP_Text PlayercoinsColected;
+    [SerializeField] TMP_Text PlayerHP;
+    [SerializeField] TMP_Text pointsText;
+    [SerializeField] TMP_Text distanceRemaining;
+    [SerializeField] float distance;
+    private int coinsColected = 0;
+    private float distanceLeft;
+
+    [Header("Parallax")]
+    [SerializeField] GameObject MountainsSpawnLoc;
+    [SerializeField] GameObject LandSpawnLoc;
+    [SerializeField] GameObject RocksSpawnLoc;
+
+    [SerializeField] GameObject[] MountainsPrefabs;
+    [SerializeField] GameObject[] LandPrefabs;
+    [SerializeField] GameObject[] RocksPrefabs;
+
+
+
+    [Header("Gold Values")]
+    [SerializeField] public int commonGold;
+    [SerializeField] public int rareGold;
+    [SerializeField] public int epicGold;
+
+    public bool GameOver;
+    private bool spawnObstacles = true;
+
+    #endregion
+
+    public void Update()
+    {
+        if (!GameOver) UpdateUI();
+        RemoveObstaclesOnFinishLine();
+    }
+
+    private void UpdateUI()
+    {
+        distanceRemaining.text = Mathf.Ceil(distanceLeft).ToString();
+        PlayercoinsColected.text = coinsColected.ToString();
+        PlayerHP.SetText("HP " + longShipHp.Hp);
+    }
+
+    public void StartGameButton()
+    {
+        spawnObstacles = true; // reset at game start
+        StartCoroutine(SpawnLoop(MountainsPrefabs, MountainsSpawnLoc, Random.Range(10f, 17f)));
+        StartCoroutine(SpawnLoop(LandPrefabs, LandSpawnLoc, Random.Range(10f, 15f)));
+        StartCoroutine(SpawnLoop(RocksPrefabs, RocksSpawnLoc, Random.Range(15f, 20f)));
+        StartCoroutine(SpawnLoop(ObstaclesPrefabs, ObstaclesSpawnLoc, Random.Range(3f, 6f)));
+        StartGameTimer();
+        GameScreen.SetActive(true);
+        GameComponents.SetActive(true);
+        StartOptions.SetActive(false);
+    }
+
+    //----------Obstacles & parallax System------------//
+
+    void SpawnFromArray(GameObject[] prefabs, GameObject spawnLoc)
+    {
+        if (prefabs.Length == 0 || spawnLoc == null) return;
+
+        int index = Random.Range(0, prefabs.Length);
+        GameObject prefabToSpawn = prefabs[index];
+
+        Instantiate(prefabToSpawn, spawnLoc.transform.position, Quaternion.identity);
+    }
+
+    private void RemoveObstaclesOnFinishLine()
+    {
+        if (finishLine.shipHitFinishLine)
+        {
+            GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Target");
+            foreach (GameObject ObstaclesPrefab in obstacles)
+            {
+                Destroy(ObstaclesPrefab);
+            } 
+        }
+    }
+    private IEnumerator SpawnLoop(GameObject[] prefabs, GameObject spawnLoc, float interval)
+    {
+        while (!GameOver)
+        {
+            if (spawnObstacles)
+            {
+                SpawnFromArray(prefabs, spawnLoc);
+            }
+            yield return new WaitForSeconds(interval);
+        }
+    }
+
+    //--------------Gold gain----------//
+
+    public void AddGoldTocoinsColected(int goldAmount)   //helper func
+    {
+        coinsColected += goldAmount;
+        if (coinsColected < 0)
+            coinsColected = 0;
+
+        if (PlayercoinsColected != null)
+            PlayercoinsColected.text = coinsColected.ToString();
+    }
+
+    //----------------Game Timer-----------//
+
+    public void StartGameTimer()
+    {
+        distanceLeft = distance;
+        StartCoroutine(GameTimer());
+    }
+
+    private IEnumerator GameTimer()
+    {
+        while (distanceLeft > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            distanceLeft -= 1f;
+
+            // stop obstacle spawning when 5 seconds are left
+            if (distanceLeft <= 2f)
+                spawnObstacles = false;
+        }
+
+        if (!GameOver)
+        {
+            GameObject finishObj = Instantiate(FinishLinePrefab, finishLinePos.transform.position, Quaternion.identity);
+        }
+    }
+
+    //------------Game Over------------//
+
+
+    public void TriggerVictory()
+    {
+        if (GameOver) return;
+        GameOver = true;
+
+        goldManager.UpdateValues(coinsColected, longShipHp.hit, longShipHp.IsAboveHalfHp());
+        int gold = goldManager.CalculateGoldEarned();
+        pointsText.text = gold.ToString();
+
+        SaveSystem.SavePlayerGold(gold);
+
+        LeanLocalization.SetToken("SCORE", coinsColected.ToString());
+
+        VictoryText.text = LeanLocalization.GetTranslationText("MiniGame/LongShip/Results", "Localization Error");
+        VictoryScreen.SetActive(true);
+    }
+
+    public void TriggerDefeat()
+    {
+        if (GameOver) return;
+        GameOver = true;
+
+        goldManager.UpdateValues(coinsColected, longShipHp.hit, longShipHp.IsAboveHalfHp());
+        int gold = goldManager.CalculateGoldEarned();
+        pointsText.text = gold.ToString();
+
+        SaveSystem.SavePlayerGold(gold);
+        
+        LeanLocalization.SetToken("SCORE", coinsColected.ToString());
+
+        VictoryText.text = LeanLocalization.GetTranslationText("MiniGame/LongShip/ResultsGameOver", "Localization Error");
+        VictoryScreen.SetActive(true);
+    }
+}
+          </code></pre>
+
           </section>
+
+
       <section class="SectionText-BOX">
        <h1>Forging</h1> 
           <div class  ="scriptsidebyside">
@@ -119,7 +543,283 @@ My responsibilities included implementing audio and sound effects, integrating a
       <img src="Images/Forging.gif" class="forging" alt="forging">
     </div>
     </div>
-      </section>
+        <div class="CSharpCode">
+          <div class="code-header">
+            <span>Code – ForgingManager</span>
+           <button class="toggle-btn" onclick="toggleCode(this)">−</button>
+          </div>
+
+          <pre class="code-block"><code class="language-csharp">
+public enum Difficulty
+{
+    Easy,
+    Hard
+}
+
+
+public class ForgingManager : MonoBehaviour
+{
+    [Header("Game Objects")]
+    [SerializeField] GameObject MovingCircle;
+    [SerializeField] ForgingTargetCircle StationaryCircle;
+
+    [Header("UI Elements")]
+    [SerializeField] GameObject StartOptions;
+    [SerializeField] GameObject GameScreen;
+    [SerializeField] GameObject WinningScreen;
+    [SerializeField] GameObject GameComponents;
+    [SerializeField] ParticleSystem EffectForHit;
+
+    [Header("Score Elements")]
+    [SerializeField] Slider scoreSlider;
+    [SerializeField] GameObject Slider;
+    [SerializeField] private TMP_Text VictoryTextScore;
+    [SerializeField] private ForgingGoldManager forgingGoldManager;
+    [SerializeField] public TextMeshProUGUI pointsText;
+
+    [Header("Game Settings")]
+    //   [SerializeField] float spawnFrequency; 
+    float drainRate;
+    [SerializeField] float scoreIncrement;
+
+    [Header("Circle Speed Settings")]
+    [SerializeField] private float easySpeed;
+    [SerializeField] private float hardSpeed;
+    [SerializeField] private GameObject StartingPosition;
+    //   [SerializeField] float SpawnDurration;
+
+    [Header("Sword Condition Sprites")]
+    [SerializeField] private Image swordImage;
+    [SerializeField] private Sprite swordPristine;
+    [SerializeField] private Sprite swordChipped;
+    [SerializeField] private Sprite swordBroken;
+    [SerializeField] private float swordQuality = 100f; // max quality
+
+
+    float score;
+    bool gameOver = false;
+    private bool timeStart = false;
+    private float elapsedTime = 0f;
+    private Difficulty selectedDifficulty = Difficulty.Easy; // Default
+
+    // List to keep track of all active moving circles in the game
+    private List<MovingCircle> activeMovingCircles = new List<MovingCircle>();
+
+    private void Start()
+    {
+        if (StationaryCircle == null)
+        {
+            StationaryCircle = FindObjectOfType<ForgingTargetCircle>();
+        }
+    }
+    public void Update()
+    {
+        if (timeStart == true)
+        {
+            elapsedTime += Time.deltaTime;
+        }
+
+        ScoreDrainage();
+        UpdateScore();
+    }
+
+    //Called when the player clicks the "Start Game" button. Initializes game state and starts spawning targets.
+    public void StartGameButton()
+    {
+        UpdateSwordSprite();
+        SetDifficultySettings();
+        timeStart = true;
+        GameScreen.SetActive(true);
+        GameComponents.SetActive(true);
+        Slider.SetActive(true);
+        StartOptions.SetActive(false);
+        StartCoroutine(SpawnCircleWithTime());
+    }
+
+
+    private void SpawnObject()
+    {
+       
+            GameObject go = Instantiate(MovingCircle, StartingPosition.transform.position, Quaternion.identity);
+            MovingCircle mc = go.GetComponent<MovingCircle>();
+            // Assign type based on probabilities
+            CircleType type = GetRandomCircleType();
+            mc.Initialize(type);
+            mc.SetSpeed(selectedDifficulty == Difficulty.Easy ? easySpeed : hardSpeed);
+            activeMovingCircles.Add(mc);
+        
+
+    }
+
+    // Randomly selects a circle type based on defined probabilities.
+    private CircleType GetRandomCircleType()
+    {
+        float rand = UnityEngine.Random.Range(0f, 100f);
+
+        if (rand < 25f)
+            return CircleType.Good;        // 0% - 24%
+        else if (rand < 50f)
+            return CircleType.Bad;       // 25% - 50%
+        else
+            return CircleType.Normal;     // 50 - 100%
+    }
+
+    // Hit check for the collided circles
+    public void CheckHit()
+    {
+        bool didHit = false;
+
+        foreach (var mc in activeMovingCircles)
+        {
+            if (mc.CanClick() && StationaryCircle.overlapdetection)
+            {
+                mc.CheckHit();
+                switch (mc.circleType)
+                {
+                    case CircleType.Good:
+                        score += scoreIncrement * 2;
+                        swordQuality += 5f; 
+                        PlayHitEffect();
+                        break;
+                    case CircleType.Bad:
+                        score -= scoreIncrement;
+                        swordQuality -= 10f;
+                        break;
+                    case CircleType.Normal:
+                        score += scoreIncrement;
+                        swordQuality += 2f;
+                        PlayHitEffect();
+                        break;
+                }
+
+                swordQuality = Mathf.Clamp(swordQuality, 0f, 100f);
+                score = Mathf.Max(score, 0f);
+                UpdateSwordSprite();
+                Win();
+                didHit = true;
+                break; // Only allow one hit per click
+            }
+        }
+
+        // If no valid hit occurred, apply penalty
+        if (!didHit)
+        {
+            score = score - scoreIncrement;
+            score = Mathf.Max(score, 0f);
+            swordQuality -= 5f;
+            swordQuality = Mathf.Clamp(swordQuality, 0f, 100f);
+            UpdateSwordSprite();
+        }
+        if (score < 0) score = 0;
+
+    }
+
+    //------Score Management------//
+    public void UpdateScore()
+    {
+       // valuetext.text = score.ToString("0");
+        scoreSlider.value = score;
+    }
+
+    public void ScoreDrainage()
+    {
+        // Drain the score over time
+        score -= drainRate * Time.deltaTime;
+        // Clamp to avoid going negative
+        score = Mathf.Max(score, 0f);
+    }
+
+    //------Win Condition------//
+    public void Win()
+    {
+        if (score >= 500)
+        {
+            var ts = TimeSpan.FromSeconds(elapsedTime);
+            forgingGoldManager.UpdateValues(ts, swordQuality, selectedDifficulty);
+            int gold = forgingGoldManager.CalculateGoldEarned();
+
+            SaveSystem.SavePlayerGold(gold);
+
+            pointsText.text = $" {gold}";
+            GameComponents.SetActive(false);
+            WinningScreen.SetActive(true);
+            Slider.SetActive(false);
+            timeStart = false;
+            gameOver = true;
+
+            LeanLocalization.SetToken("SCORE", swordQuality.ToString());
+            LeanLocalization.SetToken("TIME", elapsedTime.ToString("F2"));
+
+            VictoryTextScore.text = LeanLocalization.GetTranslationText("MiniGame/Forging/Results", "Localization Error");
+        }
+    }
+
+    //------------Button func for Difficulty------------//
+    public void SetEasyDifficulty()
+    {
+        selectedDifficulty = Difficulty.Easy;
+    }
+
+    public void SetHardDifficulty()
+    {
+        selectedDifficulty = Difficulty.Hard;
+    }
+
+    private void SetDifficultySettings()
+    {
+        switch (selectedDifficulty)
+        {
+            case Difficulty.Easy:
+                drainRate = 5f;                              
+                scoreIncrement = 50f;                       
+                break;
+            case Difficulty.Hard:
+                drainRate = 10f;                           
+                scoreIncrement = 30f;                        
+                break;
+        }
+    }
+
+    public IEnumerator SpawnCircleWithTime()
+    {
+        while (!gameOver)
+        {
+            SpawnObject();
+            float waitTime = selectedDifficulty == Difficulty.Easy
+             ? UnityEngine.Random.Range(1f, 1.5f)
+             : UnityEngine.Random.Range(0.5f, 1f);
+            yield return new WaitForSeconds(waitTime);
+        }
+
+    }
+private void UpdateSwordSprite()
+    {
+        if (swordQuality >= 70f) // high quality
+        {
+            swordImage.sprite = swordPristine;
+        }
+        else if (swordQuality >= 40f) // medium quality
+        {
+            swordImage.sprite = swordChipped;
+        }
+        else // low quality
+        {
+            swordImage.sprite = swordBroken;
+        }
+    }
+    void PlayHitEffect()        
+    {
+        if (!EffectForHit.gameObject.activeInHierarchy)
+        {
+            EffectForHit.gameObject.SetActive(true); 
+        }
+
+        EffectForHit.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); 
+        EffectForHit.Play();
+    }
+
+    </code></pre>
+
     </section>  
 
 
