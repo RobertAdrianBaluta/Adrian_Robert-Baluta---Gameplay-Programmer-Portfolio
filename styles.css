@@ -315,65 +315,65 @@ body {
 /* Data and Algorithm styles */
 
 /* Main container */
-
 .container {
   display: flex;
+  gap: 20px;
   padding: 50px;
-  background-color:rgb(26, 25, 31);
-    min-height: 500px;
+  background-color: rgb(26, 25, 31);
+  min-height: 500px;
 }
 
+/* Shared column styles */
 .left,
-.right,.rightofright {
+.right {
   flex: 1;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.226);
+  border: 1px dashed rgba(255, 255, 255, 0.226);
+  font-family: 'Courier New', monospace;
 }
-.left {
-    font-family: 'Courier New', monospace;
-    background-color:rgba(0, 0, 0, 0.226);
-    max-width: 350px;
-  border-style: dashed;
-  border-color: rgba(255, 255, 255, 0.226);
 
+/* Left column specific */
+.left {
+  max-width: 350px;
 }
 
 .left h2 {
-  font-size: 50px;
-    padding: 20px;
-   
-    font-family: 'Courier New', monospace;
-    color:rgb(255, 255, 255)  
-  
+  font-size: 3rem;
+  color: #fff;
+  margin-bottom: 10px;
 }
 
 .left p {
-  padding-left: 20px;
-   padding-bottom: 20px;
-    font-family: 'Courier New', monospace;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #d6c9c9;
 }
 
-.right {
-  padding-top: 20px;
-  padding: 20px;
-  border-style: dashed;
-  border-color: rgba(255, 255, 255, 0.226);
-  background-color: rgba(0, 0, 0, 0.226);
+/* Right columns shared text styles */
+.right h1,
+.right h2,
+.right h3 {
+  font-size: 1.5rem;
+  color: rgb(199, 199, 206);
+  margin-bottom: 10px;
 }
+
 .right p {
-  font-family: 'Courier New', monospace;
-   font-size: 30px;
+  font-size: 1.5rem;
   color: rgb(208, 209, 214);
 }
 
-.rightofright{
-  
-  background-color: rgba(0, 0, 0, 0.226);
-  padding-top: 20px;
+.rightofright {
+  flex: 1;
   padding: 20px;
-  border-style: dashed;
-  border-color: rgba(255, 255, 255, 0.226);
+  background-color: rgba(0, 0, 0, 0.226);
+  border: 1px dashed rgba(255, 255, 255, 0.226);
+  font-family: 'Courier New', monospace;
+  max-width: 400px;  
+  overflow-wrap: break-word;
 }
+
+
 
 /* Lists */
 .Aleft {
